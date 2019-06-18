@@ -1,20 +1,13 @@
 import { AbstractCollection } from './collection';
 
 export class Stack<T> extends AbstractCollection<T> {
-  constructor(iterable?: Iterable<T>) {
-    super();
-    if (iterable) {
-      this.elements_ = Array.from(iterable);
-    }
-  }
-
   /**
    * Looks at the object at the top of this Stack<T> without removing it from the Stack<T>.
    *
-   * @returns {T} The object at the top of the Stack<T>.
+   * @returns {T} The object at the top of the Stack<T> or undefined if the Stack<T> is empty.
    * @memberof Stack
    */
-  peek(): T {
+  peek(): T | undefined {
     return this.elements_[this.elements_.length - 1];
   }
 
@@ -22,7 +15,7 @@ export class Stack<T> extends AbstractCollection<T> {
    * Removes and returns the object at the top of the Stack<T>.
    *
    * @returns {(T | undefined)} The object removed from the top of the Stack<T> or undefined if the
-   * stack is empty.
+   * Stack<T> is empty.
    * @memberof Stack
    */
   pop(): T | undefined {
@@ -39,9 +32,3 @@ export class Stack<T> extends AbstractCollection<T> {
     this.elements_.push(item);
   }
 }
-
-const arr = [1, 2, 3, 4, 5];
-
-const stack = new Stack(arr);
-
-stack; //?

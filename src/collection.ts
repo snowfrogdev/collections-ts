@@ -51,6 +51,12 @@ export interface Collection<T> extends Iterable<T> {
 }
 
 export abstract class AbstractCollection<T> implements Collection<T> {
+  constructor(iterable?: Iterable<T>) {
+    if (iterable) {
+      this.elements_ = Array.from(iterable);
+    }
+  }
+  
   /**
    * The number of elements in the Collection<T>.
    *
