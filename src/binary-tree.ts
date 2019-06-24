@@ -2,45 +2,39 @@ import { Queue } from './queue';
 import { Collection } from './collection';
 import { Stack } from './stack';
 
-class Node<T> {
+export class Node<T> {
   leftChild?: Node<T>;
   rightChild?: Node<T>;
   constructor(public value: T) {}
 }
 
-export class BinaryTree<T> implements Collection<T> {
-  private size_: number = 1;
-  private root_: Node<T>;
-  constructor(value: T) {
-    this.root_ = new Node(value);
-  }
+export abstract class BinaryTree<T> implements Collection<T> {
+  protected size_: number = 0;
+  protected root_?: Node<T>;
 
   get size(): number {
-    return this.size_
+    return this.size_;
   }
 
-  add(value: T) {
-    const newNode = new Node(value);
-    const queue: Queue<Node<T>> = new Queue();
-    queue.enqueue(this.root_);
-    while (!queue.isEmpty()) {
-      const currentNode = queue.dequeue() as Node<T>;
-      if (!currentNode.leftChild) {
-        currentNode.leftChild = newNode;
-        this.size_++;
-        return;
-      }
-      if (!currentNode.rightChild) {
-        currentNode.rightChild = newNode;
-        this.size_++;
-        return;
-      }
-      queue.enqueue(currentNode.leftChild);
-      queue.enqueue(currentNode.rightChild);
-    }
+  abstract add(value: T): void;
+
+  abstract has(value: T): boolean;
+
+  abstract remove(value: T): boolean;
+
+  abstract [Symbol.iterator](): Iterator<T>;
+
+  clear() {
+    this.root_ = undefined;
+    this.size_ = 0;
+  }
+
+  isEmpty(): boolean {
+    return this.size_ === 0;
   }
 
   preOrder(callback: (value: T) => void) {
+    if (!this.root_) return;
     const stack: Stack<Node<T>> = new Stack();
     stack.push(this.root_);
     while (!stack.isEmpty()) {
@@ -56,12 +50,12 @@ export class BinaryTree<T> implements Collection<T> {
     const stack: Stack<Node<T>> = new Stack();
     while (!stack.isEmpty() || currentNode) {
       if (currentNode) {
-        stack.push(currentNode)
-        currentNode = currentNode.leftChild
+        stack.push(currentNode);
+        currentNode = currentNode.leftChild;
       } else {
-        currentNode = stack.pop() as Node<T>
-        callback(currentNode.value)
-        currentNode = currentNode.rightChild
+        currentNode = stack.pop() as Node<T>;
+        callback(currentNode.value);
+        currentNode = currentNode.rightChild;
       }
     }
   }
@@ -69,24 +63,25 @@ export class BinaryTree<T> implements Collection<T> {
   postOrder(callback: (value: T) => void) {
     let currentNode: Node<T> | undefined = this.root_;
     const stack: Stack<Node<T>> = new Stack();
-    let lastNodeVisited: Node<T> | undefined
+    let lastNodeVisited: Node<T> | undefined;
     while (!stack.isEmpty() || currentNode) {
       if (currentNode) {
-        stack.push(currentNode)
-        currentNode = currentNode.leftChild
+        stack.push(currentNode);
+        currentNode = currentNode.leftChild;
       } else {
-        const peekNode = stack.peek() as Node<T>
+        const peekNode = stack.peek() as Node<T>;
         if (peekNode.rightChild && lastNodeVisited !== peekNode.rightChild) {
-          currentNode = peekNode.rightChild
+          currentNode = peekNode.rightChild;
         } else {
-          callback(peekNode.value)
-          lastNodeVisited = stack.pop()
+          callback(peekNode.value);
+          lastNodeVisited = stack.pop();
         }
       }
     }
   }
 
   levelOrder(callback: (value: T) => void) {
+    if (!this.root_) return;
     const queue: Queue<Node<T>> = new Queue();
     queue.enqueue(this.root_);
 
@@ -100,13 +95,3 @@ export class BinaryTree<T> implements Collection<T> {
     }
   }
 }
-
-const a = new BinaryTree('a');
-a.add('b');
-a.add('c');
-a.add('d');
-a.add('e');
-a.add('f');
-a.add('g');
-a;
-a.postOrder(console.log);
