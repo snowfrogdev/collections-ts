@@ -1,4 +1,5 @@
 import { BinaryTree, Node } from './binary-tree';
+import { Stack } from './stack';
 
 interface Comparable<T> {
   isEqualTo(item: T): boolean;
@@ -93,7 +94,24 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
   }
 
   [Symbol.iterator](): Iterator<T> {
-    return [].values();
+    let currentNode: BSTNode<T> | undefined = this.root_;
+    const stack: Stack<BSTNode<T>> = new Stack();
+    return {
+      next(): IteratorResult<T> {
+        while (!stack.isEmpty() || currentNode) {
+          if (currentNode) {
+            stack.push(currentNode);
+            currentNode = currentNode.leftChild;
+          } else {
+            currentNode = stack.pop() as BSTNode<T>;
+            const result = { done: false, value: currentNode.value }
+            currentNode = currentNode.rightChild;
+            return result;
+          }
+        }
+        return ({ done: true, value: null } as any) as IteratorResult<T>;
+      }
+    }
   }
 
   private findMinNode_(rootNode = this.root_): BSTNode<T> | undefined {
@@ -146,8 +164,6 @@ bst.add(6);
 bst.add(11);
 bst.add(18);
 bst.add(21);
-bst.remove(13)
 
 bst.size; //?
-bst.inOrder(console.log)
 */
