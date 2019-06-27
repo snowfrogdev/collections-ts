@@ -53,9 +53,8 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
     super();
   }
 
-  add(value: T) {
-    this.root_ = this.insert_(this.root_, new BSTNode(value, this.compareFunction_));
-    this.size_++;
+  add(value: T): void {
+    this.insert_(this.root_, new BSTNode(value, this.compareFunction_));
   }
 
   has(value: T): boolean {
@@ -87,10 +86,10 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
     }
 
     const successor = this.findMinNode_(node.rightChild) as BSTNode<T>;
-    node.value = successor.value
-    successor.replaceNodeInParent()
+    node.value = successor.value;
+    successor.replaceNodeInParent();
     this.size_--;
-    return true
+    return true;
   }
 
   [Symbol.iterator](): Iterator<T> {
@@ -104,14 +103,14 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
             currentNode = currentNode.leftChild;
           } else {
             currentNode = stack.pop() as BSTNode<T>;
-            const result = { done: false, value: currentNode.value }
+            const result = { done: false, value: currentNode.value };
             currentNode = currentNode.rightChild;
             return result;
           }
         }
         return ({ done: true, value: null } as any) as IteratorResult<T>;
       }
-    }
+    };
   }
 
   private findMinNode_(rootNode = this.root_): BSTNode<T> | undefined {
@@ -123,24 +122,31 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
     return currentNode;
   }
 
-  private insert_(root: BSTNode<T> | undefined, newNode: BSTNode<T>): BSTNode<T> {
-    /* If the tree is empty, return a new node */
-    if (!root) {
-      root = newNode;
-      return root;
+  private insert_(root: BSTNode<T> | undefined, newNode: BSTNode<T>): void {
+    let currentNode: BSTNode<T> | undefined = root;
+    let parentNode: BSTNode<T> | undefined;
+
+    while (currentNode !== undefined) {
+      parentNode = currentNode;
+      const compareValue: number = this.compareFunction_(newNode.value, currentNode.value);
+      if (compareValue > 0) {
+        currentNode = currentNode.rightChild;
+      } else if (compareValue < 0) {
+        currentNode = currentNode.leftChild;
+      } else {               
+        return;        
+      }
     }
 
-    /* Otherwise, recur down the tree */
-    if (newNode.isLowerThan(root)) {
-      newNode.parent = root;
-      root.leftChild = this.insert_(root.leftChild, newNode);
-    } else if (newNode.isGreaterThan(root)) {
-      newNode.parent = root;
-      root.rightChild = this.insert_(root.rightChild, newNode);
+    if (parentNode === undefined) this.root_ = newNode;
+    else if (this.compareFunction_(newNode.value, parentNode.value) < 0) {
+      parentNode.leftChild = newNode;
+    } else {
+      parentNode.rightChild = newNode;
     }
 
-    /* return the (unchanged) node pointer */
-    return root;
+    newNode.parent = parentNode;
+    this.size_++;
   }
 
   private search_(root: BSTNode<T> | undefined, value: T): BSTNode<T> | undefined {
@@ -166,4 +172,5 @@ bst.add(18);
 bst.add(21);
 
 bst.size; //?
+bst
 */
