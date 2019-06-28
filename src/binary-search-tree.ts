@@ -1,32 +1,10 @@
 import { BinaryTree, Node } from './binary-tree';
 import { Stack } from './stack';
 
-interface Comparable<T> {
-  isEqualTo(item: T): boolean;
-  isGreaterThan(item: T): boolean;
-  isLowerThan(item: T): boolean;
-}
-
-class BSTNode<T> implements Node<T>, Comparable<Node<T>> {
+class BSTNode<T> implements Node<T> {
   leftChild?: BSTNode<T>;
   rightChild?: BSTNode<T>;
-  constructor(
-    public value: T,
-    private compareFunction_: (a: T, b: T) => number,
-    public parent?: BSTNode<T>
-  ) {}
-
-  isEqualTo(node: Node<T>): boolean {
-    return this.compareFunction_(this.value, node.value) === 0;
-  }
-
-  isGreaterThan(node: Node<T>): boolean {
-    return this.compareFunction_(this.value, node.value) > 0;
-  }
-
-  isLowerThan(node: Node<T>): boolean {
-    return this.compareFunction_(this.value, node.value) < 0;
-  }
+  constructor(public value: T, public parent?: BSTNode<T>) {}
 
   replaceNodeInParent(node?: BSTNode<T>) {
     if (!this.parent) return;
@@ -54,7 +32,7 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
   }
 
   add(value: T): void {
-    this.insert_(this.root_, new BSTNode(value, this.compareFunction_));
+    this.insert_(this.root_, new BSTNode(value));
   }
 
   has(value: T): boolean {
@@ -69,25 +47,16 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
 
     if (!node.leftChild && !node.rightChild) {
       node.replaceNodeInParent();
-      this.size_--;
-      return true;
-    }
-
-    if (node.leftChild && !node.rightChild) {
+    } else if (node.leftChild && !node.rightChild) {
       node.replaceNodeInParent(node.leftChild);
-      this.size_--;
-      return true;
-    }
-
-    if (!node.leftChild && node.rightChild) {
+    } else if (!node.leftChild && node.rightChild) {
       node.replaceNodeInParent(node.rightChild);
-      this.size_--;
-      return true;
+    } else {
+      const successor = this.findMinNode_(node.rightChild) as BSTNode<T>;
+      node.value = successor.value;
+      successor.replaceNodeInParent();
     }
-
-    const successor = this.findMinNode_(node.rightChild) as BSTNode<T>;
-    node.value = successor.value;
-    successor.replaceNodeInParent();
+    
     this.size_--;
     return true;
   }
@@ -133,8 +102,8 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
         currentNode = currentNode.rightChild;
       } else if (compareValue < 0) {
         currentNode = currentNode.leftChild;
-      } else {               
-        return;        
+      } else {
+        return;
       }
     }
 
@@ -150,13 +119,18 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
   }
 
   private search_(root: BSTNode<T> | undefined, value: T): BSTNode<T> | undefined {
-    if (!root) return;
-
-    if (this.compareFunction_(root.value, value) === 0) return root;
-
-    if (this.compareFunction_(root.value, value) > 0) return this.search_(root.leftChild, value);
-
-    return this.search_(root.rightChild, value);
+    let currentNode = root;
+    while (currentNode !== undefined) {
+      const compareValue = this.compareFunction_(currentNode.value, value);
+      if (compareValue === 0) {
+        return currentNode;
+      }
+      if (compareValue > 0) {
+        currentNode = currentNode.leftChild;
+      } else {
+        currentNode = currentNode.rightChild;
+      }
+    }
   }
 }
 
@@ -172,5 +146,9 @@ bst.add(18);
 bst.add(21);
 
 bst.size; //?
+bst.has(13) //?
+bst.remove(13) //?
+bst.has(13) //?
+bst.size //?
 bst
 */

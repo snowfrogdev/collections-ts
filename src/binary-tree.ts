@@ -2,10 +2,10 @@ import { Queue } from './queue';
 import { Collection } from './collection';
 import { Stack } from './stack';
 
-export class Node<T> {
+export interface Node<T> {
   leftChild?: Node<T>;
   rightChild?: Node<T>;
-  constructor(public value: T) {}
+  value: T
 }
 
 export abstract class BinaryTree<T> implements Collection<T> {
