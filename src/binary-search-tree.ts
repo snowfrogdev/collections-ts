@@ -56,30 +56,24 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
       node.value = successor.value;
       successor.replaceNodeInParent();
     }
-    
+
     this.size_--;
     return true;
   }
-
-  [Symbol.iterator](): Iterator<T> {
+  
+  *[Symbol.iterator](): Iterator<T> {
     let currentNode: BSTNode<T> | undefined = this.root_;
     const stack: Stack<BSTNode<T>> = new Stack();
-    return {
-      next(): IteratorResult<T> {
-        while (!stack.isEmpty() || currentNode) {
-          if (currentNode) {
-            stack.push(currentNode);
-            currentNode = currentNode.leftChild;
-          } else {
-            currentNode = stack.pop() as BSTNode<T>;
-            const result = { done: false, value: currentNode.value };
-            currentNode = currentNode.rightChild;
-            return result;
-          }
-        }
-        return ({ done: true, value: null } as any) as IteratorResult<T>;
+    while (!stack.isEmpty() || currentNode) {
+      if (currentNode) {
+        stack.push(currentNode);
+        currentNode = currentNode.leftChild;
+      } else {
+        currentNode = stack.pop() as BSTNode<T>;
+        yield currentNode.value;
+        currentNode = currentNode.rightChild;
       }
-    };
+    }
   }
 
   private findMinNode_(rootNode = this.root_): BSTNode<T> | undefined {
@@ -134,7 +128,6 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
   }
 }
 
-/*
 const bst = new BinarySearchTree<number>((a: number, b: number) => a - b);
 
 bst.add(13);
@@ -146,9 +139,10 @@ bst.add(18);
 bst.add(21);
 
 bst.size; //?
-bst.has(13) //?
-bst.remove(13) //?
-bst.has(13) //?
-bst.size //?
-bst
-*/
+bst.has(13); //?
+bst.remove(13); //?
+bst.has(13); //?
+bst.size; //?
+for (let item of bst) {
+  item;
+}
