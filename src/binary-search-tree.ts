@@ -60,7 +60,7 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
     this.size_--;
     return true;
   }
-  
+
   *[Symbol.iterator](): Iterator<T> {
     let currentNode: BSTNode<T> | undefined = this.root_;
     const stack: Stack<BSTNode<T>> = new Stack();
@@ -126,23 +126,4 @@ export class BinarySearchTree<T> extends BinaryTree<T> {
       }
     }
   }
-}
-
-const bst = new BinarySearchTree<number>((a: number, b: number) => a - b);
-
-bst.add(13);
-bst.add(10);
-bst.add(20);
-bst.add(6);
-bst.add(11);
-bst.add(18);
-bst.add(21);
-
-bst.size; //?
-bst.has(13); //?
-bst.remove(13); //?
-bst.has(13); //?
-bst.size; //?
-for (let item of bst) {
-  item;
 }
